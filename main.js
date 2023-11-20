@@ -68,20 +68,24 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   }
 
   function checkLimit(altText) {
-    const limit = document.querySelector(`img[alt='${altText}']`);
+    const imageLimit = document.querySelector(`img[alt='${altText}']`);
+    const limit = getParentByHierarchy(imageLimit, 2);
 
     if (limit) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting && entry.intersectionRatio === 1.0) {
-              alert("Go fucking out");
-              observer.disconnect();
-            }
-          });
-        },
-        { threshold: 1.0 }
-      );
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio === 1.0) {
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            });
+            setTimeout(() => {
+              alert("It's time to stop");
+            }, 0);
+            observer.disconnect();
+          }
+        });
+      });
 
       observer.observe(limit);
     }
