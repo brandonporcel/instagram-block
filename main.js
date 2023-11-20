@@ -79,9 +79,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
               top: 0,
               behavior: "smooth",
             });
-            setTimeout(() => {
-              alert("It's time to stop");
-            }, 0);
             observer.disconnect();
           }
         });
@@ -96,12 +93,27 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     spans.forEach((span) => {
       if (containsText(span, "Seguir") || containsText(span, "Follow")) {
         desiredSpans.push(span);
-        const elementoAbuelo7 = getParentByHierarchy(span, 7);
-
-        if (elementoAbuelo7) {
-          elementoAbuelo7.style.display = "none";
-        }
+        const followPost = getParentByHierarchy(span, 7);
+        hideElement(followPost);
       }
+    });
+  }
+
+  desiredHeaders = [];
+  function hideSponsoredPosts() {
+    const headers = document.querySelectorAll("._aaqw");
+
+    headers.forEach((header) => {
+      const spans = header.querySelectorAll("span");
+      spans.forEach((span) => {
+        if (
+          span.innerHTML.includes("Original audio") ||
+          span.innerHTML.includes("Sponsored")
+        ) {
+          const sponsoredArticle = getParentByHierarchy(span, 9);
+          hideElement(sponsoredArticle);
+        }
+      });
     });
   }
 
@@ -126,7 +138,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     });
 
     hideFollowPosts();
+    hideSponsoredPosts();
   }
+
   window.addEventListener("scroll", handleScroll);
   main();
 });
